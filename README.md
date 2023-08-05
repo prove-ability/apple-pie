@@ -1,0 +1,4 @@
+- Nextjs 18
+- styled-compoents 6
+- airbnb lint + husky
+- reset css
