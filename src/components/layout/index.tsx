@@ -1,61 +1,29 @@
 'use client'
 
-import React, { createContext, useEffect, useMemo, useState } from 'react'
-import { DefaultTheme, ThemeProvider } from 'styled-components'
+import React from 'react'
+import { ThemeProvider } from 'styled-components'
 
 import StyledComponentsRegistry from '@/lib/registry'
 import { GlobalStyle } from '@/styles/reset'
-import { Colors } from '@/styles/styled'
-import { base, dark, light } from '@/styles/theme'
 
 import Footer from './footer'
 import Header from './header'
+import {
+  ThemePreferenceContext,
+  useLoginCheck,
+  useTheme,
+} from './layout.helper'
 
 import { Container, Main } from './layout.style'
-
-const themesMap: Record<'light' | 'dark', Colors> = {
-  light,
-  dark,
-}
-
-export const ThemePreferenceContext = createContext<{
-  currentTheme: 'light' | 'dark'
-  handleThemeChange: (theme: 'light' | 'dark') => void
-}>({
-  currentTheme: 'light',
-  handleThemeChange: () => {},
-})
 
 interface Props {
   children: React.ReactNode
 }
 
 export default function Layout({ children }: Props) {
-  const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('light')
+  useLoginCheck()
 
-  // cookie 테마에 따라 테마 변경
-  useEffect(() => {
-    const theme = localStorage.getItem('elephant-theme') as
-      | typeof currentTheme
-      | undefined
-    if (theme) {
-      setCurrentTheme(theme)
-    }
-  }, [])
-
-  // context value
-  const value = useMemo(() => {
-    const handleThemeChange = (theme: typeof currentTheme) => {
-      setCurrentTheme(theme)
-      localStorage.setItem('elephant-theme', theme)
-    }
-    return {
-      currentTheme,
-      handleThemeChange,
-    }
-  }, [currentTheme])
-
-  const theme: DefaultTheme = { ...base, colors: themesMap[currentTheme] }
+  const { theme, value } = useTheme()
 
   return (
     <StyledComponentsRegistry>
