@@ -1,6 +1,6 @@
-export default function Login() {
+export default function SignIn() {
   return (
-    <form action="/auth/login" method="post">
+    <form action="/auth/sign-in" method="post">
       <label htmlFor="email">
         Email
         <input name="email" />

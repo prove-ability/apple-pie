@@ -7,6 +7,5 @@ async function getData() {
 
 export default async function Page() {
   const todos = await getData()
-  console.log(todos)
   return <pre>{JSON.stringify(todos, null, 2)}</pre>
 }

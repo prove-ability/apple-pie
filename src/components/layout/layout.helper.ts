@@ -17,16 +17,38 @@ import { base, dark, light } from '@/styles/theme'
  */
 export const useLoginCheck = () => {
   const router = useRouter()
-  useLayoutEffect(() => {
+  useEffect(() => {
     ;(async () => {
       const {
         data: { session },
       } = await supabase.auth.getSession()
+      console.log('session: ', session)
 
-      if (!session) {
-        router.push('/login')
-        throw new Error('Redirecting to /login')
-      }
+      const { data } = await supabase.auth.getUser()
+
+      console.log('data: ', data)
+      // if (!session) {
+      //   router.push('/sign-in')
+      //   throw new Error('Redirecting to /sign-in')
+      // }
+
+      // eslint-disable-next-line @typescript-eslint/no-shadow
+      supabase.auth.onAuthStateChange((event, session) => {
+        console.log(`Supabase auth event: ${event}`, session)
+        if (!session) return
+        // setUserSession(session)
+        // setUser(session?.user ?? null)
+        if (event === 'SIGNED_OUT') {
+          // delete cookies on sign out
+          const expires = new Date(0).toUTCString()
+          document.cookie = `my-access-token=; path=/; expires=${expires}; SameSite=Lax; secure`
+          document.cookie = `my-refresh-token=; path=/; expires=${expires}; SameSite=Lax; secure`
+        } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          const maxAge = 100 * 365 * 24 * 60 * 60 // 100 years, never expires
+          document.cookie = `my-access-token=${session.access_token}; path=/; max-age=${maxAge}; SameSite=Lax; secure`
+          document.cookie = `my-refresh-token=${session.refresh_token}; path=/; max-age=${maxAge}; SameSite=Lax; secure`
+        }
+      })
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
