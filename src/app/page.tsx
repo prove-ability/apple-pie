@@ -1,23 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
-import { supabase } from '@/lib/suparbase'
-
-async function getData() {
-  const { data: todos } = await supabase.from('todos').select('*')
-  return todos
-}
+import TodosList from '@/components/todos/list'
 
 export default function Page() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [todos, setTodos] = useState<any[] | null>(null)
-  useEffect(() => {
-    ;(async () => {
-      const data = await getData()
-      setTodos(data)
-    })()
-  }, [])
   const [value, setValue] = useState('')
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value)
@@ -25,7 +12,7 @@ export default function Page() {
 
   return (
     <div>
-      <p>{JSON.stringify(todos, null, 2)}</p>
+      <TodosList />
       <div>
         <form action="">
           <label htmlFor="value">
