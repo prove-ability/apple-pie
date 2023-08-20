@@ -6,12 +6,15 @@ import type { Database } from '@/lib/database.types'
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
+  if (req.url.includes('/sign-in')) {
+    return NextResponse.next(res)
+  }
+
   const supabase = createMiddlewareClient<Database>({ req, res })
 
   const {
     data: { session },
   } = await supabase.auth.getSession()
-  // console.log('session: ', session)
   if (!session) {
     const redirectUrl = req.nextUrl.clone()
     redirectUrl.pathname = '/sign-in'
@@ -20,8 +23,4 @@ export async function middleware(req: NextRequest) {
   }
 
   return res
-}
-
-export const config = {
-  matcher: '/((?!sign-in).*)',
 }
